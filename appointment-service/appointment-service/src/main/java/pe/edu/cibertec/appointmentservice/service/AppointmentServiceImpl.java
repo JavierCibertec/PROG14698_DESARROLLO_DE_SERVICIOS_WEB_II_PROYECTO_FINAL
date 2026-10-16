@@ -1,6 +1,5 @@
 package pe.edu.cibertec.appointmentservice.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pe.edu.cibertec.appointmentservice.client.DoctorClient;
 import pe.edu.cibertec.appointmentservice.dto.DoctorDTO;
@@ -12,17 +11,24 @@ import java.util.List;
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
 
-    @Autowired
-    private AppointmentRepository repository;
+    private final AppointmentRepository repository;
+    private final DoctorClient doctorClient;
 
-    @Autowired
-    private DoctorClient doctorClient;
+    // Inyección de dependencias mediante constructor (sin @Autowired)
+    public AppointmentServiceImpl(AppointmentRepository repository, DoctorClient doctorClient) {
+        this.repository = repository;
+        this.doctorClient = doctorClient;
+    }
 
     @Override
-    public List<Appointment> listAll() { return repository.findAll(); }
+    public List<Appointment> listAll() {
+        return repository.findAll();
+    }
 
     @Override
-    public Appointment getById(Long id) { return repository.findById(id).orElse(null); }
+    public Appointment getById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 
     @Override
     public Appointment schedule(Appointment appointment) {

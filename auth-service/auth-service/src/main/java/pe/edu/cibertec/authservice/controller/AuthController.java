@@ -1,6 +1,7 @@
 package pe.edu.cibertec.authservice.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.cibertec.authservice.entity.User;
 import pe.edu.cibertec.authservice.service.AuthService;
@@ -11,17 +12,22 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+
+    // Inyección de dependencia mediante constructor (sin @Autowired)
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return authService.register(user);
+    public ResponseEntity<User> register(@RequestBody User user) {
+        User registeredUser = authService.register(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> request) {
         String token = authService.login(request.get("username"), request.get("password"));
-        return Map.of("token", token);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }
