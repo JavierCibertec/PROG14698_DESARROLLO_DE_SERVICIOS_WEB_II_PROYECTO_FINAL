@@ -1,0 +1,41 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Iniciar Sesión</h2>
+    <p class="subtitle">Sistema Inteligente de Gestión de Citas Médicas</p>
+
+    <form (ngSubmit)="onLogin()">
+      <div class="form-group">
+        <label for="username">Usuario</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="credentials.username"
+          placeholder="Ejemplo: javier"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="credentials.password"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <div *ngIf="errorMessage" class="error-alert">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="isLoading" class="btn-submit">
+        <span *ngIf="!isLoading">Ingresar</span>
+        <span *ngIf="isLoading">Autenticando...</span>
+      </button>
+    </form>
+  </div>
+</div>

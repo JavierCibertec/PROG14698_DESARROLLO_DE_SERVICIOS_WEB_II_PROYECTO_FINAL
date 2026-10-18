@@ -1,0 +1,11 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="logo-icon">🏥</span>
+    <span class="logo-text">Gestión de Citas Médicas</span>
+  </div>
+
+  <div *ngIf="authService.isLoggedIn()" class="navbar-links">
+    <a routerLink="/appointments" routerLinkActive="active" class="nav-item">Citas Médicas</a>
+    <button (click)="onLogout()" class="btn-logout">Cerrar Sesión</button>
+  </div>
+</nav>
