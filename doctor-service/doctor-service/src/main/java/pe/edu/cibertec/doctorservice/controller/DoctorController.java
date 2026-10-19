@@ -11,7 +11,7 @@ import java.util.List;
 public class DoctorController {
 
     private final DoctorService service;
-    
+
     public DoctorController(DoctorService service) {
         this.service = service;
     }
@@ -28,6 +28,12 @@ public class DoctorController {
 
     @PostMapping
     public Doctor save(@RequestBody Doctor doctor) {
+        return service.save(doctor);
+    }
+
+    @PutMapping("/{id}")
+    public Doctor update(@PathVariable Long id, @RequestBody Doctor doctor) {
+        doctor.setId(id);
         return service.save(doctor);
     }
 

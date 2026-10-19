@@ -1,0 +1,36 @@
+<div class="container mt-4">
+  <h2>Gestión de Pacientes Registrados</h2>
+
+  <button class="btn btn-secondary mb-3" (click)="volverACitas()">← Volver a Citas</button>
+
+  <!-- Mensaje mientras carga -->
+  <div *ngIf="cargando" class="alert alert-info">
+    Cargando pacientes...
+  </div>
+
+  <!-- Tabla de Listado de Pacientes -->
+  <table *ngIf="!cargando" class="table table-striped table-bordered shadow-sm">
+    <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Nombres y Apellidos</th>
+      <th>DNI</th>
+      <th>Correo</th>
+      <th>Teléfono</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of patients">
+      <td>{{ p.id }}</td>
+      <td>{{ p.nombres }} {{ p.apellidos }}</td>
+      <td>{{ p.dni }}</td>
+      <td>{{ p.email }}</td>
+      <td>{{ p.telefono }}</td>
+    </tr>
+    <!-- Mensaje si la lista está vacía -->
+    <tr *ngIf="patients.length === 0">
+      <td colspan="5" class="text-center text-muted">No hay pacientes registrados.</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

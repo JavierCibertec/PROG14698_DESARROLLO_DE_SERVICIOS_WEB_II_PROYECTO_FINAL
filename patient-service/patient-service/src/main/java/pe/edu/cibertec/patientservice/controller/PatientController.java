@@ -11,7 +11,7 @@ import java.util.List;
 public class PatientController {
 
     private final PatientService service;
-    
+
     public PatientController(PatientService service) {
         this.service = service;
     }
@@ -28,6 +28,12 @@ public class PatientController {
 
     @PostMapping
     public Patient save(@RequestBody Patient patient) {
+        return service.save(patient);
+    }
+
+    @PutMapping("/{id}")
+    public Patient update(@PathVariable Long id, @RequestBody Patient patient) {
+        patient.setId(id);
         return service.save(patient);
     }
 

@@ -27,12 +27,18 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public Appointment schedule(@RequestBody Appointment appointment) {
-        return service.schedule(appointment);
+    public Appointment save(@RequestBody Appointment appointment) {
+        return service.save(appointment);
     }
 
-    @PutMapping("/{id}/cancel")
-    public void cancel(@PathVariable Long id) {
-        service.cancel(id);
+    @PutMapping("/{id}")
+    public Appointment update(@PathVariable Long id, @RequestBody Appointment appointment) {
+        appointment.setId(id);
+        return service.save(appointment);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

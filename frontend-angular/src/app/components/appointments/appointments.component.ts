@@ -1,41 +1,99 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AppointmentService } from '../../services/appointment.service';
-import { PatientService } from '../../services/patient.service';
-import { DoctorService } from '../../services/doctor.service';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-appointments',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './appointments.component.html'
+  imports: [CommonModule, FormsModule, HttpClientModule],
+  templateUrl: './appointments.component.html',
+  styleUrls: ['./appointments.component.css']
 })
 export class AppointmentsComponent implements OnInit {
-  appointments: any[] = [];
-  patients: any[] = [];
-  doctors: any[] = [];
+  listaPacientes: any[] = [];
+  listaMedicos: any[] = [];
+  listaCitas: any[] = [];
 
-  newAppointment = { patientId: null, doctorId: null, appointmentDate: '' };
+  selectedPatientId: any = '';
+  selectedDoctorId: any = '';
+  fechaHoraCita: string = '';
 
-  constructor(
-    private appointmentService: AppointmentService,
-    private patientService: PatientService,
-    private doctorService: DoctorService
-  ) {}
+  private gatewayUrl = 'http://localhost:8080/api';
 
-  ngOnInit(): void { this.loadData(); }
+  constructor(private http: HttpClient, private router: Router) {}
 
-  loadData(): void {
-    this.appointmentService.getAppointments().subscribe(data => this.appointments = data);
-    this.patientService.getPatients().subscribe(data => this.patients = data);
-    this.doctorService.getDoctors().subscribe(data => this.doctors = data);
+  ngOnInit(): void {
+    this.cargarPacientes();
+    this.cargarMedicos();
+    this.cargarCitas();
   }
 
-  onSaveAppointment(): void {
-    this.appointmentService.createAppointment(this.newAppointment).subscribe(() => {
-      this.loadData();
-      this.newAppointment = { patientId: null, doctorId: null, appointmentDate: '' };
+  cargarPacientes() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.get<any[]>(`${this.gatewayUrl}/patients`, { headers }).subscribe({
+      next: (data) => this.listaPacientes = data,
+      error: (err) => console.error('Error al cargar pacientes', err)
     });
+  }
+
+  cargarMedicos() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.get<any[]>(`${this.gatewayUrl}/doctors`, { headers }).subscribe({
+      next: (data) => this.listaMedicos = data,
+      error: (err) => console.error('Error al cargar médicos', err)
+    });
+  }
+
+  cargarCitas() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.get<any[]>(`${this.gatewayUrl}/appointments`, { headers }).subscribe({
+      next: (data) => this.listaCitas = data,
+      error: (err) => console.error('Error al cargar citas', err)
+    });
+  }
+
+  reservarCita() {
+    if (!this.selectedPatientId || !this.selectedDoctorId || !this.fechaHoraCita) {
+      alert('Por favor complete todos los campos para reservar la cita.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    const nuevaCita = {
+      patientId: this.selectedPatientId,
+      doctorId: this.selectedDoctorId,
+      fechaHora: this.fechaHoraCita,
+      status: 'RESERVADA'
+    };
+
+    this.http.post(`${this.gatewayUrl}/appointments`, nuevaCita, { headers }).subscribe({
+      next: () => {
+        alert('¡Cita reservada con éxito!');
+        this.cargarCitas();
+        this.selectedPatientId = '';
+        this.selectedDoctorId = '';
+        this.fechaHoraCita = '';
+      },
+      error: (err) => alert('Error al reservar la cita: ' + (err.error?.message || err.message))
+    });
+  }
+
+  irAListaPacientes() {
+    this.router.navigate(['/patients']);
+  }
+
+  consultarCitas() {
+    this.cargarCitas();
+    alert('Historial de citas actualizado.');
   }
 }
